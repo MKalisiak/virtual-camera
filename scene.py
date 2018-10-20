@@ -17,12 +17,14 @@ class Scene(object):
         self.d = 200
 
         self.shapes = []
+        self.initialize()
+        self.draw()
+
+    def initialize(self):
         self.shapes.append(Cuboid(Point(2, -5, 20), 10, 10, 10))
         self.shapes.append(Cuboid(Point(-12, -5, 20), 10, 10, 10))
         self.shapes.append(Cuboid(Point(2, -5, 32), 10, 10, 10))
         self.shapes.append(Cuboid(Point(-12, -5, 32), 10, 10, 10))
-
-        self.draw()
 
     def draw(self):
         self.canvas.delete(tk.ALL)
@@ -75,9 +77,6 @@ class Scene(object):
     def reset(self, event):
         self.d = 200
         self.shapes = []
-        self.shapes.append(Cuboid(Point(2, -5, 20), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(-12, -5, 20), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(2, -5, 32), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(-12, -5, 32), 10, 10, 10))
+        self.initialize()
 
         self.draw()
