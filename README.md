@@ -10,7 +10,7 @@ python main.py
 
 ## Controls
 
-Note that controls apply to the camera so the observable effects are the opposite of those described here (ex. if camera rotates **clockwise** the model rotates **counter-clockwise**)
+Note that controls apply to the camera so the observable effects are the opposite of those described here (e.g. if camera rotates **clockwise** the model rotates **counter-clockwise**)
 
 ### Moving:
 
