@@ -24,6 +24,8 @@ class Application(tk.Frame):
 
         self.bind_all("<MouseWheel>", self.scene.handle_zoom)
 
+        self.bind("<Return>", self.scene.reset)
+
 
 root = tk.Tk()
 app = Application(master=root)

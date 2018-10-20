@@ -14,20 +14,13 @@ class Scene(object):
         self.canvas = tk.Canvas(master, width=self.width, height=self.height, bg="black")
         self.canvas.pack()
 
-        self.canvas.create_line(0, self.height / 2, self.width, self.height / 2, fill="white", dash=(4, 4))
-        self.canvas.create_line(self.width / 2, 0, self.width / 2, self.height, fill="white", dash=(4, 4))
-
         self.d = 200
 
         self.shapes = []
-        self.shapes.append(Cuboid(Point(2, -12, 20), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(-12, -12, 20), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(2, 2, 20), 10, 10, 10))
-        self.shapes.append(Cuboid(Point(-12, 2, 20), 10, 10, 10))
-        # self.shapes.append(Cuboid(Point(2, -12, 32), 10, 10, 10))
-        # self.shapes.append(Cuboid(Point(-12, -12, 32), 10, 10, 10))
-        # self.shapes.append(Cuboid(Point(2, 2, 32), 10, 10, 10))
-        # self.shapes.append(Cuboid(Point(-12, 2, 32), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(2, -5, 20), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(-12, -5, 20), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(2, -5, 32), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(-12, -5, 32), 10, 10, 10))
 
         self.draw()
 
@@ -60,8 +53,8 @@ class Scene(object):
             's': lambda: self.rotate(-self.rotate_step, 0),
             'a': lambda: self.rotate(-self.rotate_step, 1),
             'd': lambda: self.rotate(self.rotate_step, 1),
-            'e': lambda: self.rotate(self.rotate_step, 2),
-            'q': lambda: self.rotate(-self.rotate_step, 2)
+            'e': lambda: self.rotate(-self.rotate_step, 2),
+            'q': lambda: self.rotate(self.rotate_step, 2)
         }.get(event.keysym)
 
         if handler:
@@ -77,4 +70,14 @@ class Scene(object):
             self.d += self.zoom_step
         else:
             self.d -= self.zoom_step
+        self.draw()
+
+    def reset(self, event):
+        self.d = 200
+        self.shapes = []
+        self.shapes.append(Cuboid(Point(2, -5, 20), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(-12, -5, 20), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(2, -5, 32), 10, 10, 10))
+        self.shapes.append(Cuboid(Point(-12, -5, 32), 10, 10, 10))
+
         self.draw()
