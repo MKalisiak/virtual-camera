@@ -1,70 +1,113 @@
-from point import Point
-from math import sin, cos
-import numpy as np
+from point import Point3D
+from ordered_set import OrderedSet
+
+
+class Edge(object):
+    def __init__(self, start_point, end_point):
+        self.start_point = start_point
+        self.end_point = end_point
+
+
+class Face(object):
+    def __init__(self, edges: [Edge]):
+        self.edges = edges
+        self.gravity_center = self.calc_gravity_center()
+
+    def calc_gravity_center(self):
+        center = Point3D(0, 0, 0)
+        for point in self.unique_points():
+            center = center.add_point(point)
+        return center.divide_by_scalar(len(self.unique_points()))
+
+    def unique_points(self):
+        points = []
+        for edge in self.edges:
+            points.append(edge.start_point)
+            points.append(edge.end_point)
+        return list(OrderedSet(points))
+
+    def draw(self, scene):
+        #TODO dont draw if behind camera
+        scene.canvas.create_polygon(self.flat_points(scene), outline="white", fill="blue")
+
+        # for edge in self.edges:
+        #     if edge.start_point.z <= 0 or edge.end_point.z <= 0:
+        #         continue
+        #     projected_start = edge.start_point.project(scene)
+        #     projected_end = edge.end_point.project(scene)
+        #     scene.canvas.create_line(projected_start.x, projected_start.y,
+        #                              projected_end.x, projected_end.y,
+        #                              fill="white")
+
+    def flat_points(self, scene):
+        points = []
+        for point in self.unique_points():
+            points.append(point.project(scene).x)
+            points.append(point.project(scene).y)
+        return points
 
 
 class Cuboid(object):
-    def __init__(self, start_point, width, depth, height):
+    def __init__(self, start_point, width, depth, height, color):
+        self.color = color
         p = start_point
-        self.bottom_0 = Point(p.x, p.y, p.z)
-        self.bottom_1 = Point(p.x + width, p.y, p.z)
-        self.bottom_2 = Point(p.x + width, p.y, p.z + depth)
-        self.bottom_3 = Point(p.x, p.y, p.z + depth)
+        self.bottom_0 = Point3D(p.x, p.y, p.z)
+        self.bottom_1 = Point3D(p.x + width, p.y, p.z)
+        self.bottom_2 = Point3D(p.x + width, p.y, p.z + depth)
+        self.bottom_3 = Point3D(p.x, p.y, p.z + depth)
 
-        self.top_0 = Point(p.x, p.y + height, p.z)
-        self.top_1 = Point(p.x + width, p.y + height, p.z)
-        self.top_2 = Point(p.x + width, p.y + height, p.z + depth)
-        self.top_3 = Point(p.x, p.y + height, p.z + depth)
+        self.top_0 = Point3D(p.x, p.y + height, p.z)
+        self.top_1 = Point3D(p.x + width, p.y + height, p.z)
+        self.top_2 = Point3D(p.x + width, p.y + height, p.z + depth)
+        self.top_3 = Point3D(p.x, p.y + height, p.z + depth)
+
+        self.edge_bottom_0 = Edge(self.bottom_0, self.bottom_1)
+        self.edge_bottom_1 = Edge(self.bottom_1, self.bottom_2)
+        self.edge_bottom_2 = Edge(self.bottom_2, self.bottom_3)
+        self.edge_bottom_3 = Edge(self.bottom_3, self.bottom_0)
+        self.edge_vertical_0 = Edge(self.bottom_0, self.top_0)
+        self.edge_vertical_1 = Edge(self.bottom_1, self.top_1)
+        self.edge_vertical_2 = Edge(self.bottom_2, self.top_2)
+        self.edge_vertical_3 = Edge(self.bottom_3, self.top_3)
+        self.edge_top_0 = Edge(self.top_0, self.top_1)
+        self.edge_top_1 = Edge(self.top_1, self.top_2)
+        self.edge_top_2 = Edge(self.top_2, self.top_3)
+        self.edge_top_3 = Edge(self.top_3, self.top_0)
 
         self.points = [self.bottom_0, self.bottom_1, self.bottom_2, self.bottom_3,
                        self.top_0, self.top_1, self.top_2, self.top_3]
 
-        self.edges = [(0, 1), (1, 2), (2, 3), (3, 0), (0, 4), (1, 5), (2, 6), (3, 7), (4, 5), (5, 6), (6, 7), (7, 4)]
+        self.edges = [
+            self.edge_bottom_0,
+            self.edge_bottom_1,
+            self.edge_bottom_2,
+            self.edge_bottom_3,
+            self.edge_vertical_0,
+            self.edge_vertical_1,
+            self.edge_vertical_2,
+            self.edge_vertical_3,
+            self.edge_top_0,
+            self.edge_top_1,
+            self.edge_top_2,
+            self.edge_top_3
+        ]
 
-    def draw(self, scene):
-        for edge in self.edges:
-            start, end = self.points[edge[0]], self.points[edge[1]]
-            if start.z <= 0 or end.z <= 0:
-                continue
-            start_x, start_y = self.project(start, scene)
-            end_x, end_y = self.project(end, scene)
-            scene.canvas.create_line(start_x, start_y, end_x, end_y, fill="white")
+        self.faces = [
+            Face([self.edge_bottom_0, self.edge_bottom_1, self.edge_bottom_2, self.edge_bottom_3]),
+            Face([self.edge_top_0, self.edge_top_1, self.edge_top_2, self.edge_top_3]),
+            Face([self.edge_bottom_0, self.edge_vertical_1, self.edge_top_0, self.edge_vertical_0]),
+            Face([self.edge_bottom_1, self.edge_vertical_2, self.edge_top_1, self.edge_vertical_1]),
+            Face([self.edge_bottom_2, self.edge_vertical_3, self.edge_top_2, self.edge_vertical_2]),
+            Face([self.edge_bottom_3, self.edge_vertical_0, self.edge_top_3, self.edge_vertical_3])
+        ]
 
-    def translate(self, distance, axis):
-        matrix = np.array([[1, 0, 0, 0],
-                           [0, 1, 0, 0],
-                           [0, 0, 1, 0],
-                           [0, 0, 0, 1]], dtype=float)
 
-        matrix[axis, 3] = distance
+    def transform(self, matrix):
         for point in self.points:
             point.transform(matrix)
 
-    def rotate(self, angle, axis):
-        matrix = np.array([[1, 0, 0, 0],
-                           [0, 1, 0, 0],
-                           [0, 0, 1, 0],
-                           [0, 0, 0, 1]], dtype=float)
 
-        if axis == 0:
-            matrix[1:3, 1:3] = np.array([[cos(angle), -1 * sin(angle)],
-                                         [sin(angle), cos(angle)]])
-        elif axis == 1:
-            matrix[0:3, 0:3] = np.array([[cos(angle), 0, sin(angle)],
-                                         [0, 1, 0],
-                                         [-1 * sin(angle), 0, cos(angle)]])
-        elif axis == 2:
-            matrix[0:2, 0:2] = np.array([[cos(angle), -1 * sin(angle)],
-                                         [sin(angle), cos(angle)]])
 
-        for point in self.points:
-            point.transform(matrix)
-
-    @staticmethod
-    def project(point, scene):
-        projected_x = scene.width / 2 + point.x * scene.d / point.z
-        projected_y = scene.height / 2 + point.y * scene.d / point.z
-        return projected_x, projected_y
 
 
 
