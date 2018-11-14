@@ -37,6 +37,7 @@ class Point3D(object):
         self.z /= divider
         return self
 
+
 class Point2D(object):
     def __init__(self, x, y):
         self.x = x

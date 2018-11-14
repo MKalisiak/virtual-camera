@@ -21,6 +21,7 @@ class Scene(object):
 
         self.painter = Painter(self)
 
+        self.camera = Point3D(0, 0, 0)
         self.d = 200
 
         self.shapes = []
@@ -35,8 +36,6 @@ class Scene(object):
 
     def draw(self):
         self.canvas.delete(tk.ALL)
-        # for shape in self.shapes:
-        #     shape.draw(self)
         self.painter.draw()
 
     def handle_move(self, event):

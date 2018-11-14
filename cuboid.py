@@ -27,17 +27,19 @@ class Face(object):
         return list(OrderedSet(points))
 
     def draw(self, scene):
-        #TODO dont draw if behind camera
-        scene.canvas.create_polygon(self.flat_points(scene), outline="white", fill="blue")
+        if self.is_in_front_of_camera(scene):
+            scene.canvas.create_polygon(self.flat_points(scene), outline="white", fill="blue")
 
-        # for edge in self.edges:
-        #     if edge.start_point.z <= 0 or edge.end_point.z <= 0:
-        #         continue
-        #     projected_start = edge.start_point.project(scene)
-        #     projected_end = edge.end_point.project(scene)
-        #     scene.canvas.create_line(projected_start.x, projected_start.y,
-        #                              projected_end.x, projected_end.y,
-        #                              fill="white")
+    def is_in_front_of_camera(self, scene):
+        for edge in self.edges:
+            if edge.start_point.z <= scene.camera.z or edge.end_point.z <= scene.camera.z:
+                return False
+        return True
+
+    def distance_from_camera(self, scene):
+        return ((self.gravity_center.x - scene.camera.x) ** 2
+                + (self.gravity_center.y - scene.camera.y) ** 2
+                + (self.gravity_center.z - scene.camera.z) ** 2)
 
     def flat_points(self, scene):
         points = []
@@ -101,10 +103,11 @@ class Cuboid(object):
             Face([self.edge_bottom_3, self.edge_vertical_0, self.edge_top_3, self.edge_vertical_3])
         ]
 
-
     def transform(self, matrix):
         for point in self.points:
             point.transform(matrix)
+        for face in self.faces:
+            face.gravity_center = face.calc_gravity_center()
 
 
 
