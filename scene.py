@@ -6,6 +6,7 @@ from math import sin, cos
 import numpy as np
 from axis import Axis
 from painter import Painter
+from plane import Plane
 
 
 class Scene(object):

@@ -26,16 +26,18 @@ class Point3D(object):
         return Point2D(projected_x, projected_y)
 
     def add_point(self, point):
-        self.x += point.x
-        self.y += point.y
-        self.z += point.z
-        return self
+        result = Point3D(self.x, self.y, self.z)
+        result.x += point.x
+        result.y += point.y
+        result.z += point.z
+        return result
 
     def divide_by_scalar(self, divider):
-        self.x /= divider
-        self.y /= divider
-        self.z /= divider
-        return self
+        result = Point3D(self.x, self.y, self.z)
+        result.x /= divider
+        result.y /= divider
+        result.z /= divider
+        return result
 
 
 class Point2D(object):
