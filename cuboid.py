@@ -3,15 +3,25 @@ from ordered_set import OrderedSet
 
 
 class Edge(object):
-    def __init__(self, start_point, end_point):
+    def __init__(self, start_point : Point3D, end_point : Point3D):
         self.start_point = start_point
         self.end_point = end_point
+
+    def get_middle_point(self):
+        return self.start_point.add_point(self.end_point).divide_by_scalar(2)
 
 
 class Face(object):
     def __init__(self, edges: [Edge]):
         self.edges = edges
         self.gravity_center = self.calc_gravity_center()
+
+    def __repr__(self):
+        points = []
+        for edge in self.edges:
+            points.append(edge.start_point)
+            points.append(edge.end_point)
+        return  str(points)
 
     def calc_gravity_center(self):
         center = Point3D(0, 0, 0)
@@ -47,6 +57,24 @@ class Face(object):
             points.append(point.project(scene).x)
             points.append(point.project(scene).y)
         return points
+
+    def split(self):
+        faces = []
+        for index, edge in enumerate(self.edges):
+            # edge0 = Edge(edge.start_point, edge.get_middle_point())
+            # edge1 = Edge(edge.get_middle_point(),
+            #              self.calc_gravity_center())
+            # edge2 = Edge(self.calc_gravity_center(),
+            #              self.edges[index-1].get_middle_point())
+            # edge3 = Edge(self.edges[index-1].get_middle_point(), edge.start_point)
+            edge0 = Edge(Point3D(0,0,10), Point3D(10,0,10))
+            edge1 = Edge(Point3D(10, 0, 10), Point3D(10, 10, 10))
+            edge2 = Edge(Point3D(10, 10, 10), Point3D(0, 10, 10))
+            edge3 = Edge(Point3D(0, 10, 10), Point3D(0, 0, 10))
+
+
+            faces.append(Face([edge0, edge1, edge2, edge3]))
+        return faces
 
 
 class Cuboid(object):
