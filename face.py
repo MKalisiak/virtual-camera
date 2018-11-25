@@ -1,6 +1,8 @@
 from edge import Edge
 from point import Point3D
 from ordered_set import OrderedSet
+import pygame
+import colors
 
 
 class Face(object):
@@ -29,7 +31,9 @@ class Face(object):
 
     def draw(self, scene):
         if self.is_in_front_of_camera(scene):
-            scene.canvas.create_polygon(self.flat_points(scene), outline="white", fill="blue")
+            # scene.canvas.create_polygon(self.flat_points(scene), outline="white", fill="blue")
+            pygame.draw.polygon(scene.canvas, colors.blue, self.flat_points(scene), 0)
+            pygame.draw.polygon(scene.canvas, colors.white, self.flat_points(scene), 1)
 
     def is_in_front_of_camera(self, scene):
         for edge in self.edges:
@@ -45,8 +49,7 @@ class Face(object):
     def flat_points(self, scene):
         points = []
         for point in self.unique_points():
-            points.append(point.project(scene).x)
-            points.append(point.project(scene).y)
+            points.append((point.project(scene).x, point.project(scene).y))
         return points
 
     def split(self):

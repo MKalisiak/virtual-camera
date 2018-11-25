@@ -1,34 +1,57 @@
-import tkinter as tk
 from scene import Scene
+import pygame
+import sys
 
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.pack()
-
-        self.scene = Scene(master)
-        self.bind("<w>", self.scene.handle_move)
-        self.bind("<s>", self.scene.handle_move)
-        self.bind("<a>", self.scene.handle_move)
-        self.bind("<d>", self.scene.handle_move)
-        self.bind("<e>", self.scene.handle_move)
-        self.bind("<q>", self.scene.handle_move)
-
-        self.bind("<Control-w>", self.scene.handle_turn)
-        self.bind("<Control-s>", self.scene.handle_turn)
-        self.bind("<Control-a>", self.scene.handle_turn)
-        self.bind("<Control-d>", self.scene.handle_turn)
-        self.bind("<Control-e>", self.scene.handle_turn)
-        self.bind("<Control-q>", self.scene.handle_turn)
-
-        self.bind_all("<MouseWheel>", self.scene.handle_zoom)
-
-        self.bind("<Return>", self.scene.reset)
+class Application(object):
+    def __init__(self):
+        self.scene = Scene()
 
 
-root = tk.Tk()
-app = Application(master=root)
-app.focus_set()
-app.mainloop()
+pygame.init()
+app = Application()
+
+running = True
+while running:
+    for i in pygame.event.get():
+        if i.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+            sys.exit()
+        if i.type == pygame.KEYDOWN:
+            if pygame.key.get_mods() == pygame.KMOD_NONE:
+                if i.key == pygame.K_w:
+                    app.scene.handle_move({'keysym': 'w'})
+                elif i.key == pygame.K_s:
+                    app.scene.handle_move({'keysym': 's'})
+                elif i.key == pygame.K_a:
+                    app.scene.handle_move({'keysym': 'a'})
+                elif i.key == pygame.K_d:
+                    app.scene.handle_move({'keysym': 'd'})
+                elif i.key == pygame.K_q:
+                    app.scene.handle_move({'keysym': 'q'})
+                elif i.key == pygame.K_e:
+                    app.scene.handle_move({'keysym': 'e'})
+                elif i.key == pygame.K_KP_PLUS:
+                    app.scene.handle_zoom({'keysym': '+'})
+                elif i.key == pygame.K_KP_MINUS:
+                    app.scene.handle_zoom({'keysym': '-'})
+                elif i.key == pygame.K_RETURN:
+                    app.scene.reset()
+
+            if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                if i.key == pygame.K_w:
+                    app.scene.handle_turn({'keysym': 'w'})
+                elif i.key == pygame.K_s:
+                    app.scene.handle_turn({'keysym': 's'})
+                elif i.key == pygame.K_a:
+                    app.scene.handle_turn({'keysym': 'a'})
+                elif i.key == pygame.K_d:
+                    app.scene.handle_turn({'keysym': 'd'})
+                elif i.key == pygame.K_q:
+                    app.scene.handle_turn({'keysym': 'q'})
+                elif i.key == pygame.K_e:
+                    app.scene.handle_turn({'keysym': 'e'})
+
+    pygame.display.update()
 
