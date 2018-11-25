@@ -1,5 +1,7 @@
 import math
 from cuboid import Cuboid
+from sphere import Sphere
+from light_source import LightSource
 from point import Point3D
 from math import sin, cos
 import numpy as np
@@ -11,8 +13,8 @@ import colors
 
 class Scene(object):
     def __init__(self):
-        self.width = 800
-        self.height = 800
+        self.width = 300
+        self.height = 300
         self.move_step = 2
         self.zoom_step = 10
         self.rotate_step = math.pi / 18
@@ -25,20 +27,26 @@ class Scene(object):
 
         self.camera = Point3D(0, 0, 0)
         self.d = 200
+        self.light = LightSource(Point3D(5, 5, 5))
 
         self.shapes = []
         self.initialize()
         self.draw()
 
     def initialize(self):
-        self.shapes.append(Cuboid(Point3D(2, -5, 20), 10, 10, 10, "red"))
-        self.shapes.append(Cuboid(Point3D(-12, -5, 20), 10, 10, 10, "blue"))
-        self.shapes.append(Cuboid(Point3D(2, -5, 32), 10, 10, 10, "green"))
-        self.shapes.append(Cuboid(Point3D(-12, -5, 32), 10, 10, 10, "yellow"))
+        # self.shapes.append(Cuboid(Point3D(2, -5, 20), 10, 10, 10, "red"))
+        # self.shapes.append(Cuboid(Point3D(-12, -5, 20), 10, 10, 10, "blue"))
+        # self.shapes.append(Cuboid(Point3D(2, -5, 32), 10, 10, 10, "green"))
+        # self.shapes.append(Cuboid(Point3D(-12, -5, 32), 10, 10, 10, "yellow"))
+        self.shapes.append(Sphere(Point3D(0, 0, 20), 10))
 
     def draw(self):
         self.canvas.fill(colors.black)
-        self.painter.draw()
+        #self.painter.draw()
+        for shape in self.shapes:
+            shape.draw(self)
+        # TODO nie rysowac swiatelka
+        self.light.draw(self)
 
     def handle_move(self, event):
         handler = {
@@ -64,6 +72,7 @@ class Scene(object):
 
         for shape in self.shapes:
             shape.transform(matrix)
+        self.light.transform(matrix)
 
     def handle_turn(self, event):
         handler = {
@@ -98,6 +107,7 @@ class Scene(object):
 
         for shape in self.shapes:
             shape.transform(matrix)
+        self.light.transform(matrix)
 
     def handle_zoom(self, event):
         if event['keysym'] == '+':
