@@ -5,6 +5,8 @@ from sympy.solvers import solve
 from sympy import Symbol
 import numpy as np
 from enum import Enum
+from material import Material
+from phong import Phong
 
 
 class ColorPart(Enum):
@@ -14,9 +16,10 @@ class ColorPart(Enum):
 
 
 class Sphere(object):
-    def __init__(self, center: Point3D, radius: int):
+    def __init__(self, center: Point3D, radius: int, material: Material):
         self.center = center
         self.radius = radius
+        self.material = material
 
     def draw(self, scene):
         print(self.center)
@@ -37,15 +40,17 @@ class Sphere(object):
         pixels = pygame.surfarray.pixels3d(scene.canvas)
         print(pixels.shape)
         counter = 0
+        pixels_count = scene.width * scene.height
+        phong = Phong(scene, self, scene.light)
         for index, pixel in np.ndenumerate(pixels):
             if index[2] == ColorPart.Green.value and pixel == 255:
-                pixels[index[0], index[1], :] = np.array([255, 0, 0])
+                # TODO optimize reverse projecting
                 point = self.reverse_project(scene, Point2D(index[0], index[1]))
-                print(f'{point}, {self.center}')
-                print(type(point.x))
-                counter += 1
-                if counter > 100:
-                    break
+                intensity = phong.compute(point)
+                intensity = min(intensity, 255)
+                pixels[index[0], index[1], :] = np.array([intensity, intensity, intensity])
+            counter += 1
+            print(f'{counter}/{pixels_count}')
 
 
     def transform(self, matrix):
@@ -61,18 +66,22 @@ class Sphere(object):
         r = self.radius
 
         d = scene.d
+        x_offset = scene.width / 2
+        y_offset = scene.height / 2
 
+        # TODO optimize this, possibly by solving analytically and pasting the equation
         z = Symbol('z')
-        possible_z = solve((x_p * z / d - x_c) ** 2 + (y_p * z / d - y_c) ** 2 + (z - z_c) ** 2 - r ** 2, z)
+        possible_z = solve(((x_p - x_offset) * z / d - x_c) ** 2 + ((y_p - y_offset) * z / d - y_c) ** 2 + (z - z_c) ** 2 - r ** 2, z)
 
-        print(possible_z)
         z = min(possible_z)
 
         z = float(z)
 
-        x = x_p * z / d
-        y = y_p * z / d
+        x = (x_p - x_offset) * z / d
+        y = (y_p - y_offset) * z / d
 
         reversed_point = Point3D(x, y, z)
 
         return reversed_point
+
+

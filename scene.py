@@ -9,6 +9,7 @@ from axis import Axis
 from painter import Painter
 import pygame
 import colors
+from material import Material
 
 
 class Scene(object):
@@ -23,11 +24,11 @@ class Scene(object):
         self.canvas.fill(colors.black)
         pygame.display.update()
 
-        self.painter = Painter(self)
+        #self.painter = Painter(self)
 
         self.camera = Point3D(0, 0, 0)
         self.d = 200
-        self.light = LightSource(Point3D(5, 5, 5))
+        self.light = LightSource(Point3D(5, 5, 5), 255, 0)
 
         self.shapes = []
         self.initialize()
@@ -38,7 +39,7 @@ class Scene(object):
         # self.shapes.append(Cuboid(Point3D(-12, -5, 20), 10, 10, 10, "blue"))
         # self.shapes.append(Cuboid(Point3D(2, -5, 32), 10, 10, 10, "green"))
         # self.shapes.append(Cuboid(Point3D(-12, -5, 32), 10, 10, 10, "yellow"))
-        self.shapes.append(Sphere(Point3D(0, 0, 20), 10))
+        self.shapes.append(Sphere(Point3D(0, 0, 20), 10, Material(k_a=0, k_d=0.5, k_s=0.5, n=50)))
 
     def draw(self):
         self.canvas.fill(colors.black)

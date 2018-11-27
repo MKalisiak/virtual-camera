@@ -39,8 +39,19 @@ class Point3D(object):
         result.z /= divider
         return result
 
+    def add_vector(self, vector):
+        return Point3D(self.x + vector.end.x - vector.start.x,
+                       self.y + vector.end.y - vector.start.y,
+                       self.z + vector.end.z - vector.start.z)
+
 
 class Point2D(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __repr__(self):
+        return f"({self.x}, {self.y})"
