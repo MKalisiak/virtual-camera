@@ -22,7 +22,6 @@ class Sphere(object):
         self.material = material
 
     def draw(self, scene):
-        print(self.center)
         if self.center.z <= 0:
             return
 
@@ -32,26 +31,30 @@ class Sphere(object):
         projected_center = (int(projected_center.x), int(projected_center.y))
         projected_radius = int(projected_radius)
 
-        print(projected_center)
-
         pygame.draw.circle(scene.canvas, colors.green, projected_center, projected_radius, 0)
-        # pygame.draw.circle(scene.canvas, colors.white, projected_center, projected_radius, 1)
 
         pixels = pygame.surfarray.pixels3d(scene.canvas)
-        print(pixels.shape)
-        counter = 0
-        pixels_count = scene.width * scene.height
+
         phong = Phong(scene, self, scene.light)
+
+        counter = 0
+        number_of_pixels = scene.height * scene.width * 3
+
+        # index = [x, y, ( r | g | b )]
+        # pixel = <color value>
         for index, pixel in np.ndenumerate(pixels):
-            if index[2] == ColorPart.Green.value and pixel == 255:
-                # TODO optimize reverse projecting
+            if self.is_pixel_green(pixels[index[0], index[1], :]):
                 point = self.reverse_project(scene, Point2D(index[0], index[1]))
                 intensity = phong.compute(point)
-                intensity = min(intensity, 255)
-                pixels[index[0], index[1], :] = np.array([intensity, intensity, intensity])
+                intensity = np.clip(intensity, 0, 255) / 255
+                pixels[index[0], index[1], :] = np.clip((self.material.color + scene.light.color) * intensity, 0, 255)
             counter += 1
-            print(f'{counter}/{pixels_count}')
+            if counter % (number_of_pixels / 100) == 0:
+                print(f'{counter / number_of_pixels * 100}%')
 
+    @staticmethod
+    def is_pixel_green(pixel):
+        return pixel[ColorPart.Red.value] == 0 and pixel[ColorPart.Green.value] == 255 and pixel[ColorPart.Blue.value] == 0
 
     def transform(self, matrix):
         self.center.transform(matrix)
@@ -69,9 +72,11 @@ class Sphere(object):
         x_offset = scene.width / 2
         y_offset = scene.height / 2
 
-        # TODO optimize this, possibly by solving analytically and pasting the equation
-        z = Symbol('z')
-        possible_z = solve(((x_p - x_offset) * z / d - x_c) ** 2 + ((y_p - y_offset) * z / d - y_c) ** 2 + (z - z_c) ** 2 - r ** 2, z)
+        a = (((x_p - x_offset) ** 2 + (y_p - y_offset) ** 2) / d **2) + 1
+        b = (((-2 * x_c * (x_p - x_offset)) - (2 * y_c * (y_p - y_offset))) / d) - (2 * z_c)
+        c = x_c ** 2 + y_c ** 2 + z_c ** 2 - r ** 2
+
+        possible_z = np.roots([a, b, c])
 
         z = min(possible_z)
 
