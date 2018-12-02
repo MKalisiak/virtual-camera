@@ -9,9 +9,9 @@ class Phong(object):
         self.light = light
 
     def compute(self, point: Point3D):
-        return (self.sphere.material.k_a * self.light.ambient_intensity +
-                self.sphere.material.k_d * self.light.directional_intensity * self.normal(point).dot(self.light_vector(point)) +
-                self.sphere.material.k_s * self.light.directional_intensity * self.observer_vector(point).dot(self.reflection_vector(point)) ** self.sphere.material.n)
+        return (self.sphere.material.k_a * self.sphere.material.color +
+                self.sphere.material.k_d * self.light.color * self.normal(point).dot(self.light_vector(point)) +
+                self.sphere.material.k_s * self.light.color * self.observer_vector(point).dot(self.reflection_vector(point)) ** self.sphere.material.n)
 
     def normal(self, point: Point3D) -> Vector3D:
         return Vector3D(self.sphere.center, point).move(point).resize(1)

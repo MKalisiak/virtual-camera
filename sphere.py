@@ -45,12 +45,11 @@ class Sphere(object):
         for index, pixel in np.ndenumerate(pixels):
             if self.is_pixel_green(pixels[index[0], index[1], :]):
                 point = self.reverse_project(scene, Point2D(index[0], index[1]))
-                intensity = phong.compute(point)
-                intensity = np.clip(intensity, 0, 255) / 255
-                pixels[index[0], index[1], :] = np.clip((self.material.color + scene.light.color) * intensity, 0, 255)
+                new_color = phong.compute(point)
+                pixels[index[0], index[1], :] = np.clip(new_color, 0, 255)
             counter += 1
             if counter % (number_of_pixels / 100) == 0:
-                print(f'{counter / number_of_pixels * 100}%')
+                print(f'{(counter / number_of_pixels * 100):<3.0f}%')
 
     @staticmethod
     def is_pixel_green(pixel):

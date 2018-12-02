@@ -24,30 +24,34 @@ class Scene(object):
         self.canvas.fill(colors.light_blue)
         pygame.display.update()
 
-        #self.painter = Painter(self)
-
         self.camera = Point3D(0, 0, 0)
         self.d = 200
 
         self.lights = []
-        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.white, directional_intensity=255, ambient_intensity=100))
-        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.red, directional_intensity=255, ambient_intensity=100))
-        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.green, directional_intensity=255, ambient_intensity=100))
-        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.blue, directional_intensity=255, ambient_intensity=100))
+
+        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.white))      # CTRL + 1
+        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.red))        # CTRL + 2
+        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.green))      # CTRL + 3
+        self.lights.append(LightSource(position=Point3D(5, 5, 5), color=colors.blue))       # CTRL + 4
+
         self.light = self.lights[0]
 
         self.shapes = []
         self.materials = []
-        self.materials.append(Material(k_a=0, k_d=0.5, k_s=0.5, n=50, color=colors.light_blue))
-        self.materials.append(Material(k_a=0, k_d=0.5, k_s=0.5, n=50, color=colors.red))
-        self.materials.append(Material(k_a=0, k_d=0.5, k_s=0.5, n=50, color=colors.violet))
-        self.materials.append(Material(k_a=0, k_d=0.2, k_s=0.8, n=50, color=colors.black))
-        self.materials.append(Material(k_a=0, k_d=0.8, k_s=0.2, n=50, color=colors.black))
 
-        self.materials.append(Material(k_a=0, k_d=0.5, k_s=0.5, n=10, color=colors.black))
-        self.materials.append(Material(k_a=0, k_d=0.5, k_s=0.5, n=200, color=colors.black))
+        self.materials.append(Material(k_a=0.5, k_d=0.5, k_s=0.5, n=50, color=colors.light_blue))   # 1
+        self.materials.append(Material(k_a=0.0, k_d=0.5, k_s=0.5, n=50, color=colors.red))          # 2
+        self.materials.append(Material(k_a=0.5, k_d=0.5, k_s=0.5, n=50, color=colors.violet))       # 3
+        self.materials.append(Material(k_a=0.5, k_d=0.2, k_s=0.8, n=50, color=colors.black))        # 4
+        self.materials.append(Material(k_a=0.5, k_d=0.8, k_s=0.2, n=50, color=colors.black))        # 5
 
-        self.materials.append(Material(k_a=0, k_d=0.8, k_s=0.2, n=2, color=colors.black))
+        self.materials.append(Material(k_a=0.5, k_d=0.5, k_s=0.5, n=10, color=colors.black))        # 6
+        self.materials.append(Material(k_a=0.5, k_d=0.5, k_s=0.5, n=200, color=colors.black))       # 7
+
+        self.materials.append(Material(k_a=0.2, k_d=0.5, k_s=0.5, n=20, color=colors.violet))       # 8
+        self.materials.append(Material(k_a=0.8, k_d=0.5, k_s=0.5, n=20, color=colors.violet))       # 9
+
+        self.materials.append(Material(k_a=0.5, k_d=0.8, k_s=0.2, n=4, color=colors.black))         # 0
 
         self.initialize()
         self.draw()

@@ -4,10 +4,8 @@ import pygame
 
 
 class LightSource(object):
-    def __init__(self, position: Point3D, color, directional_intensity=255, ambient_intensity=0):
+    def __init__(self, position: Point3D, color):
         self.position = position
-        self.directional_intensity = directional_intensity
-        self.ambient_intensity = ambient_intensity
         self.color = color
 
     def draw(self, scene):
